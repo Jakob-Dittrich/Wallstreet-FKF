@@ -4,6 +4,25 @@ const dbPath = '../database/wallstreet-database.db'; // Update the path as neces
 // Function to establish a database connection
 const connect = () => new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE);
 
+const getAppSetting = async (settingKey) => {
+    const sql = `SELECT * FROM appSettings WHERE setting_key = ?`;
+    try {
+        const rows = await read(sql, [settingKey]);
+        return rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+        console.error('Error fetching app setting:', error);
+        return null;
+    }
+};
+
+
+const getBooleanAppSetting = (settingKey) => {
+    return getAppSetting(settingKey).then((setting) => {
+        // Check if setting is not null and compare the string value
+        return setting !== null && setting.setting_value === '1';
+    });
+};
+
 // Generic read function for SELECT queries
 const read = (sql, params = []) => {
     return new Promise((resolve, reject) => {
@@ -45,6 +64,8 @@ const write = (sql, params = [], db = null) => {
 module.exports = {
     read,
     write,
-    connect // Export the connect function as well to use for transactions
+    connect,
+    getAppSetting,
+    getBooleanAppSetting
 };
 
