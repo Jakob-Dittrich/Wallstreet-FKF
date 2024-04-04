@@ -88,6 +88,8 @@ function calculatePrice(quantityOrdered, drink, totalOrders) {
     newPrice += 2;
   } else if (orderPercentage > 30) {
     newPrice += 1;
+  } else if (orderPercentage > 15) {
+    newPrice += 0.5;
   } else if (orderPercentage < 5) {
     newPrice -= 1;
   } else if (orderPercentage < 15) {
