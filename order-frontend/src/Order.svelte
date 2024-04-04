@@ -190,7 +190,7 @@
                     {#each Object.values(cart) as item}
                         <li>
                             {item.name}
-                            {item.price.toFixed(2)}€ x {item.quantity} | 
+                            {item.price.toFixed(2)}€ x {item.quantity} |
                             {(item.quantity * item.price).toFixed(2)}€
                         </li>
                     {/each}
@@ -208,19 +208,22 @@
     </div>
 {/if}
 
-<div class="header-container">
-    <h2>Product List</h2>
+<div class="header">
+    <div class="header-container">
+        <h2>Product List</h2>
 
-    <div class="timer">{formatTime(time)}</div>
-</div>
-
-<div class="header-container">
-    <div>
-        {#if Object.keys(cart).length}
-            <button on:click={cancelOrder}> Cancel </button>
-        {/if}
+        <div class="timer">{formatTime(time)}</div>
     </div>
-    <button on:click={enableCartView(true)}> 🛒 </button>
+
+    <div class="header-container">
+        <div>
+            {#if Object.keys(cart).length}
+                <button on:click={cancelOrder}> Cancel </button>
+            {/if}
+            <span> Total Price: {totalPrice.toFixed(2)}€</span>
+        </div>
+        <button on:click={enableCartView(true)}> 🛒 </button>
+    </div>
 </div>
 
 <ul>
@@ -241,7 +244,9 @@
         </li>
     {/each}
 </ul>
-<button class="full-width-button" on:click={enableCartView(true)}> Go to Cart 🛒 </button>
+<button class="full-width-button" on:click={enableCartView(true)}>
+    Go to Cart 🛒
+</button>
 
 <style>
     /* Add your CSS styles here {cart[product.id].quantity} */
@@ -261,6 +266,12 @@
         display: inline-block;
         margin-top: 0px;
         margin-bottom: 0cm;
+    }
+
+    .header {
+        position: sticky;
+        top: 0;
+        background: #121212;
     }
 
     .header-container {
@@ -293,36 +304,40 @@
     }
 
     .cart-view {
-    position: fixed;
-    right: 0;
-    top: 0;
-    width: 300px;
-    height: 100%;
-    background: rgb(32, 32, 32);
-    border-left: 1px solid #ccc;
-    padding: 20px;
-    box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.2);
-    z-index: 100;
-    display: flex;
-    flex-direction: column;
-}
+        position: fixed;
+        right: 0;
+        top: 0;
+        width: 300px;
+        height: 100%;
+        background: rgb(32, 32, 32);
+        border-left: 1px solid #ccc;
+        padding: 20px;
+        box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.2);
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+    }
 
-.cart-content {
-    overflow-y: auto; /* Hier ermöglichen wir das Scrollen */
-    flex-grow: 1; /* Lässt die cart-content den verfügbaren Platz ausfüllen */
-}
+    .cart-content {
+        overflow-y: auto; /* Hier ermöglichen wir das Scrollen */
+        flex-grow: 1; /* Lässt die cart-content den verfügbaren Platz ausfüllen */
+    }
 
-.cart-content ul {
-    list-style: none;
-    padding: 0;
-    margin: 0; /* Kein Abstand, da die cart-content den Raum kontrolliert */
-}
+    .cart-content ul {
+        list-style: none;
+        padding: 0;
+        margin: 0; /* Kein Abstand, da die cart-content den Raum kontrolliert */
+    }
 
-.cart-footer {
-    margin-top: 1rem;
-    margin-bottom: 2rem;
-}
+    .cart-footer {
+        margin-top: 1rem;
+        margin-bottom: 2rem;
+    }
 
+    .cart-footer {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
 
     .close-btn {
         position: absolute;
