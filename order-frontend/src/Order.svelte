@@ -139,9 +139,10 @@
 
     async function submitOrder() {
         const order = {
-            drinks: Object.values(cart).map(({ id, quantity }) => ({
+            drinks: Object.values(cart).map(({ id, quantity, price }) => ({
                 id,
                 quantity,
+                price
             })),
         };
 
