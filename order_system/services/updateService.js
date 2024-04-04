@@ -77,8 +77,6 @@ function calculatePrice(quantityOrdered, drink, totalOrders) {
   let dif = centerPrice - drink.minPrice;
   if (dif > 1.5) {
     centerPrice = centerPrice - 1;
-  } else if (dif > 1.0) {
-    centerPrice = centerPrice - 0.5;
   }
   let newPrice = drink.price;
 
