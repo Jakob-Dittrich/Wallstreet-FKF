@@ -25,7 +25,7 @@
             stopTimer();
             startTimer(data.message);
             console.log(data);
-            if (!!Object.keys(cart).length) {
+            if (!!Object.keys(cart).length || time <= 1) {
                 pendingPriceUpdate = true;
             } else {
                 updateDrinks();
