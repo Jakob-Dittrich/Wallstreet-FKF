@@ -55,7 +55,7 @@ async function placeOrder(orderDetails) {
 
     // Insert order items using the orderId
     const orderItemInsertSql =
-      "INSERT INTO order_items (order_id, drink_id, quantity, itemPrice) VALUES (?, ?, ?);";
+      "INSERT INTO order_items (order_id, drink_id, quantity, itemPrice) VALUES (?, ?, ?, ?);";
     for (const item of orderItems) {
       await databaseAccess.write(
         orderItemInsertSql,
