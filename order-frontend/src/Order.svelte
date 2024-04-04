@@ -184,26 +184,27 @@
     <div class="cart-view">
         <button class="close-btn" on:click={enableCartView(false)}>X</button>
         <h2>Drink Cart</h2>
-        <ul>
-            {#if Object.keys(cart).length > 0}
-                {#each Object.values(cart) as item}
-                    <li>
-                        {item.name}
-                        {item.price.toFixed(2)}€ x {item.quantity} | {(
-                            item.quantity * item.price
-                        ).toFixed(2)}€
-                    </li>
-                {/each}
+        <div class="cart-content">
+            <ul>
+                {#if Object.keys(cart).length > 0}
+                    {#each Object.values(cart) as item}
+                        <li>
+                            {item.name}
+                            {item.price.toFixed(2)}€ x {item.quantity} | 
+                            {(item.quantity * item.price).toFixed(2)}€
+                        </li>
+                    {/each}
+                {:else}
+                    <div><h2>Cart is empty</h2></div>
+                {/if}
+            </ul>
+            <div class="cart-footer">
                 <h2>Total Price: {totalPrice.toFixed(2)}€</h2>
                 {#if orderSubmitBtn}
                     <button on:click={submitOrder}>Submit Order</button>
                 {/if}
-            {:else}
-                <div>
-                    <h2>Cart is empty</h2>
-                </div>
-            {/if}
-        </ul>
+            </div>
+        </div>
     </div>
 {/if}
 
@@ -289,17 +290,36 @@
     }
 
     .cart-view {
-        position: fixed;
-        right: 0;
-        top: 0;
-        width: 300px;
-        height: 100%;
-        background: rgb(32, 32, 32);
-        border-left: 1px solid #ccc;
-        padding: 20px;
-        box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.2);
-        z-index: 100;
-    }
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background: rgb(32, 32, 32);
+    border-left: 1px solid #ccc;
+    padding: 20px;
+    box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+}
+
+.cart-content {
+    overflow-y: auto; /* Hier ermöglichen wir das Scrollen */
+    flex-grow: 1; /* Lässt die cart-content den verfügbaren Platz ausfüllen */
+}
+
+.cart-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0; /* Kein Abstand, da die cart-content den Raum kontrolliert */
+}
+
+.cart-footer {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
 
     .close-btn {
         position: absolute;
