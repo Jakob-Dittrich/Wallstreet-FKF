@@ -25,7 +25,7 @@
             stopTimer();
             startTimer(data.message);
             console.log(data);
-            if (!!cart.length) {
+            if (!!Object.keys(cart).length) {
                 pendingPriceUpdate = true;
             } else {
                 updateDrinks();
@@ -35,7 +35,7 @@
         await fetchDrinks();
     });
 
-    $: if (!cart.length && pendingPriceUpdate) {
+    $: if (!Object.keys(cart).length && pendingPriceUpdate) {
         updateDrinks();
     }
 
@@ -215,9 +215,12 @@
 </div>
 
 <div class="header-container">
-    {#if !!cart.length}
-        <button on:click={cancelOrder}> Cancel </button>
-    {/if}
+    <div>
+        {#if Object.keys(cart).length}
+            <button on:click={cancelOrder}> Cancel </button>
+        {/if}
+    </div>
+    <button on:click={enableCartView(true)}> 🛒 </button>
 </div>
 
 <ul>
