@@ -8,7 +8,6 @@
     let drinks = [];
     let socket;
     let pendingPriceUpdate = false;
-    let profitOrLoss = 0;
 
     onMount(async () => {
         socket = io(backendUrl);
@@ -30,7 +29,6 @@
                 pendingPriceUpdate = true;
             } else {
                 updateDrinks();
-                getProfitOrLoss();
             }
         });
 
@@ -45,21 +43,6 @@
     function updateDrinks() {
         fetchDrinks(); // Re-fetch the drinks data
     }
-
-    async function getProfitOrLoss() {
-  try {
-    const response = await fetch(backendUrl + "/api/profitOrLoss");
-    if (response.ok) {
-      const data = await response.json();
-      console.log("profit="+data)
-      profitOrLoss = data;
-    } else {
-      console.error("Failed to fetch profit or loss");
-    }
-  } catch (error) {
-    console.error("Error fetching profit or loss:", error);
-  }
-}
 
     onDestroy(() => {
         console.log("onDestroy called");
@@ -159,7 +142,7 @@
             drinks: Object.values(cart).map(({ id, quantity, price }) => ({
                 id,
                 quantity,
-                price
+                price,
             })),
         };
 
@@ -229,13 +212,6 @@
 <div class="header">
     <div class="header-container">
         <h2>Product List</h2>
-      
-       
-    <div class="profit-loss-display {profitOrLoss >= 0 ? 'profit' : 'loss'}">
-        Profit/Loss: {profitOrLoss.toFixed(2)}€
-    </div>
-  
-   
         <div class="timer">{formatTime(time)}</div>
     </div>
 
@@ -277,19 +253,6 @@
     ul {
         list-style: none;
         padding: 0 0 150px;
-    }
-
-    .profit-loss-display {
-        font-weight: bold;
-        margin-right: 10px;
-    }
-
-    .profit-loss-display.profit {
-        color: green;
-    }
-    
-    .profit-loss-display.loss {
-        color: red;
     }
 
     .timer {
