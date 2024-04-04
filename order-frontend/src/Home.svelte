@@ -1,4 +1,5 @@
 <script>
+	import { backendUrl } from "./environment.js";
     export let name = "john doe";
     let userInput = ""; // Variable to hold the user's input
 
@@ -11,6 +12,7 @@
 
 <main>
 	<h1>Hello {name}!</h1>
+	<h2>API { backendUrl }</h2>
     <input type="text" bind:value={userInput} placeholder="Enter your name"/>
     <button on:click={greetUser}>Greet Me</button>
 	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>

@@ -1,8 +1,7 @@
 <script>
     import { onDestroy, onMount } from "svelte";
     import io from "socket.io-client";
-
-    const backendUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
+    import { backendUrl } from "./environment.js";
 
     let drinks = [];
     let socket;
