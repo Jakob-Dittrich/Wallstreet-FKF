@@ -1,5 +1,7 @@
 <script>
     import Popup from "../lib/Popup.svelte"
+	
+    
 
     let showPopup = false;
 
@@ -52,6 +54,14 @@
 </script>
 
 <main>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/drinks">Drinks</a></li>
+            <li><a href="/drinkGroup">DrinkGroup</a></li>
+        </ul>
+    </nav>
+
     <h1>Admin Tool for Börsen FKF!</h1>
     <input type="text" bind:value={userInput} placeholder="Enter your name" />
     <button on:click={() => showPopup = true}>Greet Me</button>
@@ -111,5 +121,24 @@
 
     button {
         width: 20%;
+    }
+
+    nav ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        display: flex; /* Set the display to flex */
+    }
+
+    nav ul li {
+        margin-right: 10px; /* Adjust the spacing between tabs */
+    }
+
+    nav ul li a {
+        text-decoration: none;
+        color: #ffffff; /* Adjust the color of the links */
+        padding: 5px 10px;
+        border: 1px solid #ccc; /* Add a border to each tab */
+        border-radius: 5px; /* Add some border radius for styling */
     }
 </style>

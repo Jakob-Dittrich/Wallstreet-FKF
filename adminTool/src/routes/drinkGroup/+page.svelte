@@ -51,6 +51,14 @@
 }
 </script>
 
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/drinks">Drinks</a></li>
+        <li><a href="/drinkGroup">DrinkGroup</a></li>
+    </ul>
+</nav>
+
 <!-- Dropdown for selecting a drink group -->
 <select on:change={handleGroupChange}>
     <option value="">Select a Drink Group</option>
@@ -79,5 +87,27 @@
         <button type="submit">Update Prices</button>
     </form>
 {/if}
+
+<style>
+
+    nav ul {
+            list-style-type: none;
+            padding: 10;
+            margin: 10;
+            display: flex; /* Set the display to flex */
+        }
+    
+        nav ul li {
+            margin-right: 10px; /* Adjust the spacing between tabs */
+        }
+    
+        nav ul li a {
+            text-decoration: none;
+            color: #ffffff; /* Adjust the color of the links */
+            padding: 5px 10px;
+            border: 1px solid #ccc; /* Add a border to each tab */
+            border-radius: 5px; /* Add some border radius for styling */
+        }
+    </style>
 
 
