@@ -121,25 +121,58 @@ function updatePrices(io) {
 }
 
 let updateCounter = 0;
-let updateCycle = 6;
+let updateCycle = 2;
 // Export a function that starts the cron jobs
 function startScheduledTasks(io) {
-  cron.schedule("*/5 * * * * *", async () => {
-    console.log("Performing calculation task".yellow);
-    console.log("=====================================".yellow);
-    await calculateNewPrices().then(() => {
-      console.log("sending update values");
-      io.emit("update_values", { message: "Update your values" });
-      updateCounter++;
-      if (updateCounter === updateCycle) {
-        updatePrices(io);
-        updateCounter = 0;
-      }
-      console.log("Ending calculation task".yellow);
-      console.log("=====================================".yellow);
+
+    let firstCall = true;
+    let crashCycle = 0;
+    let crashDuration = 4;//120;
+    cron.schedule('*/5 * * * * *', async () => {
+try {
+            const shouldUpdatePrices = await databaseAccess.getBooleanAppSetting('updatePrices');
+
+            if (!shouldUpdatePrices) {
+                if (firstCall) {
+                    console.log('Update Prices is disabled, skipping scheduled task.');
+                    firstCall = false;
+                    console.log('Crash cycle started. with duration: '.red + updateCycle*crashDuration);
+                    io.emit('start_time', { message: 5*crashDuration });
+                }
+
+                io.emit('update_values', {message: 'Update your values'})
+                if (crashCycle >= crashDuration) {
+                    console.log('Crash cycle reached, stopping scheduled tasks.'.red);
+                    databaseAccess.write('UPDATE appSettings SET setting_value = 1 WHERE setting_key = \'updatePrices\' ')
+                    crashCycle = 0;
+                    return;
+                }
+                crashCycle++;
+            }
+            if (shouldUpdatePrices) {
+                firstCall = true;
+                console.log('Performing calculation task'.yellow);
+                console.log('====================================='.yellow);
+                await calculateNewPrices()
+                    .then(() => {
+                        console.log('sending update values')
+                        io.emit('update_values', {message: 'Update your values'})
+                        updateCounter++;
+                        if (updateCounter === updateCycle) {
+                            updatePrices(io);
+                            updateCounter = 0;
+                        }
+                        console.log('Ending calculation task'.yellow);
+                        console.log('====================================='.yellow);
+                    });
+            } else {
+                console.log('Update Prices is disabled, skipping scheduled task.');
+            }
+        } catch (err) {
+            console.error('Error checking updatePrices setting:', err);
+        }
     });
-  });
-}
+  }
 
 module.exports = {
   startScheduledTasks,
