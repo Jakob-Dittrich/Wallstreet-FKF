@@ -4,6 +4,7 @@ const orderService = require("./orderService");
 const drinkService = require("./drinkService");
 const databaseAccess = require("../DatabaseAccess/databaseAccess");
 const cycleService = require("./cycleService");
+const drinkPriceService = require("./drinkPriceService");
 require("colors");
 
 // Function that calculates new prices
@@ -103,13 +104,15 @@ function calculatePrice(quantityOrdered, drink, totalOrders) {
 
 // Function to update the prices in the database
 function updatePrices(io) {
-  console.log(cycleService.getCycle() + ". cycle: Updating prices...");
+  const cycle = cycleService.getCycle();
+  console.log(cycle + ". cycle: Updating prices...");
   console.log("=====================================");
   cycleService.incrementCycle();
   drinkService
     .setNewDrinkPrice()
     .then(() => {
-      console.log("Prices updated for cycle " + cycleService.getCycle());
+      savePrices();
+      console.log("Prices updated for cycle " + cycle);
     })
     .catch((error) => {
       console.error("Error updating prices:", error);
@@ -117,6 +120,24 @@ function updatePrices(io) {
     .finally(() => {
       console.log("Prices updated.");
       io.emit("start_time", { message: updateCycle * 5 });
+    });
+}
+
+function savePrices() {
+  drinkService
+    .getDrinks()
+    .then((drinks) => {
+      drinkPriceService
+        .addDrinkPrices(cycleService.getCycle(), drinks)
+        .then(() => {
+          console.log("Prices saved for cycle " + cycleService.getCycle());
+        })
+        .catch((error) => {
+          console.error("Error saving prices:", error);
+        });
+    })
+    .catch((error) => {
+      console.error("Error getting drinks for saving prices:", error);
     });
 }
 

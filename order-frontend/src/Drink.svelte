@@ -1,12 +1,15 @@
 <script>
     import { onDestroy, onMount } from "svelte";
     import io from "socket.io-client";
+    import PriceChart from "./PriceChart.svelte";
 
     const backendUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
 
     let drinks = [];
+    let drinkPrices = {};
     let socket;
     let groupedDrinks = {};
+    let groups = [];
 
     const groupDrinksByGroup = () => {
         groupedDrinks = drinks.reduce((groups, drink) => {
@@ -17,6 +20,8 @@
             groups[group].push(drink);
             return groups;
         }, {});
+        groups = Object.keys(groupedDrinks)
+        groups.sort((a, b) => groupedDrinks[b].length - groupedDrinks[a].length);
     };
 
     onMount(() => {
@@ -65,9 +70,37 @@
             console.error("Fetching drinks failed:", error);
         }
     }
+
+    // Function to fetch drink prices from the server
+    async function fetchDrinkPrices() {
+        try {
+            const response = await fetch(backendUrl + "/api/drinkPrices");
+            if (response.ok) {
+                const prices = await response.json();
+                let minCycle = Math.max(0, Math.max(...prices.map((price) => price.cycle_id)) - 60);
+                for (let price of prices) {
+                    if (price.cycle_id < minCycle) {
+                        continue;
+                    }
+                    if (!drinkPrices[price.cycle_id]) {
+                        drinkPrices[price.cycle_id] = {};
+                    }
+                    drinkPrices[price.cycle_id][price.drink_id] = price.price;
+                    drinkPrices[price.cycle_id]["time"] = new Date(price.time);
+                }
+                console.log("Drink prices:", drinkPrices);
+            } else {
+                throw new Error(`HTTP error: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("Fetching drink prices failed:", error);
+        }
+    }
+
     // Function to update drinks data
     function updateDrinks() {
         fetchDrinks(); // Re-fetch the drinks data
+        fetchDrinkPrices(); // Re-fetch the drink prices
     }
 
     let time = 120;
@@ -102,7 +135,10 @@
     <div class="timer">{formatTime(time)}</div>
 </div>
 <div class="group-container">
-    {#each Object.keys(groupedDrinks) as group}
+    <div class="group-section">
+        <PriceChart {drinkPrices} {drinks} />
+    </div>
+    {#each groups as group}
         <div class="group-section">
             <h2>{group}</h2>
             <table>
@@ -120,14 +156,16 @@
                             <td
                                 class:trend-up={drink.newPrice > drink.price}
                                 class:trend-down={drink.newPrice < drink.price}
-                                class:trend-stable={drink.newPrice === drink.price}
+                                class:trend-stable={drink.newPrice ===
+                                    drink.price}
                             >
                                 {drink.price.toFixed(2)}€
                             </td>
                             <td
                                 class:trend-up={drink.newPrice > drink.price}
                                 class:trend-down={drink.newPrice < drink.price}
-                                class:trend-stable={drink.newPrice === drink.price}
+                                class:trend-stable={drink.newPrice ===
+                                    drink.price}
                             >
                                 {getTrendSymbol(drink.price, drink.newPrice)}
                             </td>
@@ -140,23 +178,23 @@
 </div>
 
 <style>
+    .group-container {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 20px;
+    }
 
-.group-container {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 20px;
-}
+    .group-section {
+        flex: 1 1 50%; /* Füllt 50% der Breite, aber kann bei Bedarf auf 100% wachsen oder schrumpfen */
+        box-sizing: border-box;
+        padding: 1rem; /* Fügt etwas Platz zwischen den Spalten hinzu */
+        max-width: 50%; /* Begrenzt die maximale Breite der Spalten auf 50% */
+    }
 
-.group-section {
-    flex: 1 1 50%; /* Füllt 50% der Breite, aber kann bei Bedarf auf 100% wachsen oder schrumpfen */
-    box-sizing: border-box;
-    padding: 1rem; /* Fügt etwas Platz zwischen den Spalten hinzu */
-}
-
-/* Optional: Fügt einen Trennstrich zwischen den Spalten hinzu */
-.group-section:nth-child(odd) {
-    border-right: 1px solid #333;
-}
+    /* Optional: Fügt einen Trennstrich zwischen den Spalten hinzu */
+    .group-section:nth-child(odd) {
+        border-right: 1px solid #333;
+    }
     :global(body) {
         margin: 0;
         padding: 0;
