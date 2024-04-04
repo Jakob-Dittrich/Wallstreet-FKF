@@ -40,7 +40,7 @@ const getItemOrders = () => {
     "oi.quantity, \n" +
     "oi.itemPrice AS price_per_item, \n" +
     "d.name AS drink_name, \n" +
-    "d.drinkGroupId AS drink_droup_id, \n" +
+    "d.drinkGroupId AS drink_group_id, \n" +
     "o.created_at AS order_created_at \n" +
     "FROM order_items oi \n" +
     "JOIN drinks d ON oi.drink_id = d.id \n" +
@@ -97,6 +97,13 @@ async function getProfitOrLoss() {
       const profit =
         order.price_per_item -
         getDrinkNormalizePrice(order.drink_name, order.drink_group_id);
+      console.log(
+        "normalizedPrice=" +
+          getDrinkNormalizePrice(order.drink_name, order.drink_group_id)
+      );
+      console.log(
+        "drinkName=" + order.drink_name + "; group=" + order.drink_group_id
+      );
       const totalPrice = order.quantity * profit;
       summedPrice += totalPrice;
     });
